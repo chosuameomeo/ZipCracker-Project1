@@ -65,6 +65,16 @@ class zipcracker_extended: # some zip files are encrypted with more than 1 passw
 				current += 1
 				if current >= self.numthreads:
 					current = 0
+
+		elif self.mode == SEGMENTED:
+			total_pwd = len(pwd)
+			seg_size = total_pwd // self.numthreads
+			for i in range(self.numthreads):
+				start = i * seg_size
+				end = (start + seg_size) if i != self.numthreads - 1 else total_pwd
+				for password in pwd[start:end]:	
+					self.queues[i].put(password)		
+
 		for q in self.queues: #
 			q.put(EXIT_)
 		## wait for the print queues to populate:
